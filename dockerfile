@@ -1,13 +1,7 @@
-FROM node:20-alpine
-WORKDIR /app
+# Dockerfile
+FROM rocicorp/zero:1.3.0
 
-# Копируем только package.json для кэширования
-COPY package.json ./
-RUN npm install --omit=dev
-
-# HEALTHCHECK для Railway
+# zero-cache читает конфиг только из ENV, CMD не нужен
+# Но добавим healthcheck для Railway
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-  CMD wget -qO- http://localhost:${PORT:-4848}/health || exit 1
-
-# Railpack выполнит этот CMD через npm start
-CMD ["npm", "start"]
+  CMD wget -qO- http://localhost:4848/keepalive || exit 1
